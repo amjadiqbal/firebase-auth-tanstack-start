@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+  <defs>
+    <linearGradient id="ibg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#0B1220"/>
+    </linearGradient>
+    <linearGradient id="acc" gradientUnits="userSpaceOnUse" x1="90" y1="100" x2="380" y2="400">
+      <stop offset="0" stop-color="#5EEAD4"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+    <mask id="bite">
+      <rect width="512" height="512" fill="#fff"/>
+      <circle cx="362" cy="118" r="62" fill="#000"/>
+      <circle cx="402" cy="196" r="30" fill="#000"/>
+    </mask>
+  </defs>
+  <defs><pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.5" fill="#E2E8F0"/></pattern></defs>
+  <rect width="1200" height="300" fill="#F8FAFC"/>
+  <rect x="980" width="220" height="300" fill="url(#dots)"/>
+  <g transform="translate(56 50) scale(0.390625)">
+  <rect width="512" height="512" rx="112" fill="url(#ibg)"/>
+  <!-- session cookie -->
+  <circle cx="236" cy="252" r="160" fill="url(#acc)" mask="url(#bite)"/>
+  <ellipse cx="160" cy="176" rx="17" ry="13" fill="#0F766E"/>
+  <ellipse cx="300" cy="340" rx="15" ry="12" fill="#0F766E"/>
+  <ellipse cx="146" cy="318" rx="13" ry="10" fill="#0F766E"/>
+  <ellipse cx="318" cy="232" rx="11" ry="9" fill="#0F766E"/>
+  <!-- keyhole -->
+  <circle cx="230" cy="232" r="36" fill="#0B1220"/>
+  <path d="M212 252 L248 252 L262 318 L198 318 Z" fill="#0B1220"/>
+  <!-- verified -->
+  <path d="M398 300 L462 324 V374 C462 416 434 444 398 462 C362 444 334 416 334 374 V324 Z" fill="#F8FAFC" stroke="#0B1220" stroke-width="12" stroke-linejoin="round"/>
+  <path d="M370 380 L390 400 L426 360" fill="none" stroke="#0D9488" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="290" y="122" font-family="Inter, -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-size="50" font-weight="800" fill="#0F172A" letter-spacing="-1.5">firebase-auth-tanstack-start</text>
+  <text x="292" y="170" font-family="Inter, -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="500" fill="#334155">Firebase Authentication for <tspan fill="#0D9488" font-weight="600">TanStack Start</tspan>, verified on the server</text>
+  <g font-family="Inter, -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="600">
+    <rect x="292" y="204" width="196" height="36" rx="18" fill="#FFFFFF" stroke="#E2E8F0"/><text x="390" y="228" text-anchor="middle" fill="#0D9488">for TanStack Start</text>
+    <rect x="500" y="204" width="250" height="36" rx="18" fill="#FFFFFF" stroke="#E2E8F0"/><text x="625" y="228" text-anchor="middle" fill="#334155">httpOnly session cookies</text>
+    <rect x="762" y="204" width="196" height="36" rx="18" fill="#FFFFFF" stroke="#E2E8F0"/><text x="860" y="228" text-anchor="middle" fill="#334155">context.user in SSR</text>
+  </g>
+  <text x="1170" y="280" text-anchor="end" font-family="Inter, -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#64748B">Community package. Not affiliated with or endorsed by Google or Firebase.</text>
+</svg>

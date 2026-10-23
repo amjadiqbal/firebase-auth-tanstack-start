@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <defs>
+    <linearGradient id="ibg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#0B1220"/>
+    </linearGradient>
+    <linearGradient id="acc" gradientUnits="userSpaceOnUse" x1="90" y1="100" x2="380" y2="400">
+      <stop offset="0" stop-color="#5EEAD4"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+    <mask id="bite">
+      <rect width="512" height="512" fill="#fff"/>
+      <circle cx="362" cy="118" r="62" fill="#000"/>
+      <circle cx="402" cy="196" r="30" fill="#000"/>
+    </mask>
+  </defs>
+  <defs><pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.6" fill="#1A2540"/></pattern></defs>
+  <rect width="1280" height="640" fill="#0B1220"/>
+  <rect width="1280" height="640" fill="url(#dots)"/>
+  <g transform="translate(80 64) scale(0.3125)">
+  <rect x="3" y="3" width="506" height="506" rx="110" fill="url(#ibg)" stroke="#24314D" stroke-width="6"/>
+  <!-- session cookie -->
+  <circle cx="236" cy="252" r="160" fill="url(#acc)" mask="url(#bite)"/>
+  <ellipse cx="160" cy="176" rx="17" ry="13" fill="#0F766E"/>
+  <ellipse cx="300" cy="340" rx="15" ry="12" fill="#0F766E"/>
+  <ellipse cx="146" cy="318" rx="13" ry="10" fill="#0F766E"/>
+  <ellipse cx="318" cy="232" rx="11" ry="9" fill="#0F766E"/>
+  <!-- keyhole -->
+  <circle cx="230" cy="232" r="36" fill="#0B1220"/>
+  <path d="M212 252 L248 252 L262 318 L198 318 Z" fill="#0B1220"/>
+  <!-- verified -->
+  <path d="M398 300 L462 324 V374 C462 416 434 444 398 462 C362 444 334 416 334 374 V324 Z" fill="#F8FAFC" stroke="#0B1220" stroke-width="12" stroke-linejoin="round"/>
+  <path d="M370 380 L390 400 L426 360" fill="none" stroke="#0D9488" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="270" y="132" font-family="Inter, -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-size="56" font-weight="800" fill="#F8FAFC" letter-spacing="-1.8">firebase-auth-tanstack-start</text>
+  <text x="272" y="186" font-family="Inter, -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-size="27" font-weight="500" fill="#CBD5E1">Firebase Authentication for <tspan fill="#2DD4BF" font-weight="600">TanStack Start</tspan>, verified on the server</text>
+  <rect x="80" y="252" width="1120" height="282" rx="20" fill="#0F172A" stroke="#1E2A44" stroke-width="2"/>
+  <circle cx="112" cy="282" r="7" fill="#334155"/><circle cx="136" cy="282" r="7" fill="#334155"/><circle cx="160" cy="282" r="7" fill="#334155"/>
+  <g font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="21" fill="#E2E8F0" xml:space="preserve">
+    <text x="112" y="330"><tspan fill="#C4B5FD">export const</tspan> getProfile = <tspan fill="#2DD4BF">createServerFn</tspan>()</text>
+    <text x="137" y="362">.<tspan fill="#2DD4BF">handler</tspan>(<tspan fill="#C4B5FD">async</tspan> ({ context }) =&gt; {</text>
+    <text x="162" y="394"><tspan fill="#C4B5FD">const</tspan> user = auth.<tspan fill="#2DD4BF">requireUser</tspan>(context) <tspan dx="12" fill="#64748B">// 401 when signed out</tspan></text>
+    <text x="162" y="426"><tspan fill="#C4B5FD">return</tspan> { uid: user.uid, role: user.claims.role }</text>
+    <text x="137" y="458">})</text>
+    <text x="112" y="490"><tspan fill="#64748B">// session cookie read during SSR: httpOnly, Secure, SameSite=Lax</tspan></text>
+  </g>
+  <g font-family="Inter, -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="600">
+    <text x="80" y="590" fill="#2DD4BF">npm i @amjadiqbal/firebase-auth-tanstack-start</text>
+    <text x="1200" y="590" text-anchor="end" fill="#94A3B8">not affiliated with Google or Firebase</text>
+  </g>
+</svg>
