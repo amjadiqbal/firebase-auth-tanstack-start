@@ -3,6 +3,24 @@
 All notable changes to `@amjadiqbal/firebase-auth-tanstack-start` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-10-23
+
+Fixes from a README-versus-code audit of 0.1.1.
+
+### Changed
+- Default backend and App Check: a token whose `kid` is not in the cached key set now triggers one early key download (at most once a minute per key URL), so tokens signed with freshly rotated Google keys are accepted instead of refused until the cache expires.
+- `engines.node` is now `>=22.12`, TanStack Start's own minimum (it said `>=20.19`, which Start does not support).
+
+### Added
+- `npm run test:emulator`: 10 integration tests of both backends against the Firebase Auth Emulator (verify, session cookies, custom claims, revocation, disabled and deleted users). Local CI now also runs the unit tests on Node 22.
+
+### Docs
+- What the `/server` entry needs at runtime (Start's server runtime uses `node:async_hooks`), corrected from "imports no Node modules".
+- `checkRevoked` and revocation need `serviceAccount` only with the default backend (no Application Default Credentials); firebase-admin uses its own credentials.
+- `clockToleranceSeconds`, `serviceAccount` and `emulatorHost` apply to the default backend only.
+- Key caching rules; App Check limits (no replay protection, no clock tolerance, always the package's verifier, checked before the login body).
+- `allowedOrigins` replaces the default origin; a failed revoke still deletes the cookie; `signOut()` still signs the browser out when the logout call fails.
+
 ## [0.1.1] - 2026-10-23
 
 First published release. Version 0.1.0 was tagged but never published to npm.

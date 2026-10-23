@@ -279,6 +279,9 @@ describe('loginHandler', () => {
     expect((await missing.json()).error.code).toBe('app-check/missing-token');
     const invalid = await auth.loginHandler(login({idToken: 'good-id'}, {'x-firebase-appcheck': 'garbage'}));
     expect((await invalid.json()).error.code).toBe('app-check/invalid-token');
+    // Checked before the body is read.
+    const badBody = await auth.loginHandler(login({}));
+    expect((await badBody.json()).error.code).toBe('app-check/missing-token');
     const optional = setup({appCheck: {projectNumber: '123', requireOnLogin: false}, fetch}).auth;
     expect((await optional.loginHandler(login({idToken: 'good-id'}))).status).toBe(200);
   });

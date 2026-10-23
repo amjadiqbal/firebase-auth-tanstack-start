@@ -1,0 +1,8 @@
+{
+  "emulators": {
+    "auth": { "host": "127.0.0.1", "port": 9398 },
+    "hub": { "port": 4498 },
+    "logging": { "port": 4598 },
+    "ui": { "enabled": false }
+  }
+}

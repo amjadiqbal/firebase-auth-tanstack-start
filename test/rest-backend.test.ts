@@ -113,6 +113,44 @@ describe('restBackend: ID tokens', () => {
     }
   });
 
+  it('downloads the keys again for an unknown kid (Google rotated them), at most once a minute', async () => {
+    vi.useFakeTimers({toFake: ['Date']});
+    try {
+      let rotated = false;
+      const fetch = fakeFetch({
+        [ID_TOKEN_CERTS_URL]: () =>
+          jsonResponse(rotated ? {[other.kid]: other.certPem} : {[google.kid]: google.certPem}, {
+            headers: {'cache-control': 'max-age=3600'},
+          }),
+      });
+      const backend = restBackend({projectId: PROJECT_ID, fetch});
+      await backend.verifyIdToken(await sign(google, idTokenClaims()), false);
+      rotated = true;
+      const rotatedToken = await sign(other, idTokenClaims());
+      // Within a minute of the last download: refused without asking Google again.
+      expect(await codeOf(backend.verifyIdToken(rotatedToken, false))).toBe('auth/invalid-id-token');
+      expect(fetch.calls).toHaveLength(1);
+      vi.setSystemTime(Date.now() + 61_000);
+      await expect(backend.verifyIdToken(rotatedToken, false)).resolves.toMatchObject({uid: 'user-1'});
+      expect(fetch.calls).toHaveLength(2);
+      // A kid that is still unknown right after that download is refused without another one.
+      expect(await codeOf(backend.verifyIdToken(await sign(google, idTokenClaims()), false))).toBe(
+        'auth/invalid-id-token',
+      );
+      expect(fetch.calls).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('fetches the keys on every check when Google sends no max-age', async () => {
+    const fetch = fakeFetch({[ID_TOKEN_CERTS_URL]: () => jsonResponse({[google.kid]: google.certPem})});
+    const backend = restBackend({projectId: PROJECT_ID, fetch});
+    await backend.verifyIdToken(await sign(google, idTokenClaims()), false);
+    await backend.verifyIdToken(await sign(google, idTokenClaims()), false);
+    expect(fetch.calls).toHaveLength(2);
+  });
+
   it('reports a failed key download as auth/internal-error and retries next time', async () => {
     let fail = true;
     const fetch = fakeFetch({

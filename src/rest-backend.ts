@@ -64,6 +64,9 @@ interface CachedKeys {
   expiresAt: number;
 }
 
+/** An unknown `kid` makes the backend download the keys again, at most this often per key URL. */
+export const KEY_REFETCH_INTERVAL_MS = 60_000;
+
 function maxAgeSeconds(cacheControl: string | null): number {
   const match = cacheControl?.match(/max-age=(\d+)/);
   return match ? Number(match[1]) : 0;
@@ -85,6 +88,7 @@ export function restBackend(options: RestBackendOptions): FirebaseAuthBackend {
     : `https://identitytoolkit.googleapis.com/v1/projects/${projectId}`;
 
   const keyCache = new Map<string, Promise<CachedKeys>>();
+  const lastFetch = new Map<string, number>();
   let accessToken: {value: string; expiresAt: number} | undefined;
 
   async function loadKeys(url: string): Promise<CachedKeys> {
@@ -98,16 +102,24 @@ export function restBackend(options: RestBackendOptions): FirebaseAuthBackend {
     return {keys, expiresAt: Date.now() + maxAgeSeconds(response.headers.get('cache-control')) * 1000};
   }
 
+  function refresh(url: string): Promise<CachedKeys> {
+    const loading = loadKeys(url);
+    keyCache.set(url, loading);
+    lastFetch.set(url, Date.now());
+    loading.catch(() => keyCache.delete(url));
+    return loading;
+  }
+
+  // Keys are kept for the response's Cache-Control max-age (fetched again on every check when there is none). A kid
+  // that is not in the cached set triggers one early download, at most once per KEY_REFETCH_INTERVAL_MS, because
+  // Google may have rotated its keys.
   async function publicKey(url: string, kid: string): Promise<CryptoKey | undefined> {
-    let cached = keyCache.get(url);
+    const cached = keyCache.get(url);
     let entry = cached ? await cached.catch(() => undefined) : undefined;
-    if (!entry || entry.expiresAt <= Date.now()) {
-      cached = loadKeys(url);
-      keyCache.set(url, cached);
-      cached.catch(() => keyCache.delete(url));
-      entry = await cached;
-    }
-    return entry.keys.get(kid);
+    if (!entry || entry.expiresAt <= Date.now()) entry = await refresh(url);
+    const key = entry.keys.get(kid);
+    if (key || Date.now() - (lastFetch.get(url) ?? 0) < KEY_REFETCH_INTERVAL_MS) return key;
+    return (await refresh(url)).keys.get(kid);
   }
 
   function checkClaims(payload: JWTPayload, kind: TokenKind) {

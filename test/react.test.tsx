@@ -161,6 +161,19 @@ describe('useFirebaseUser', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  it('signOut() still signs the browser out when the logout call fails, then tries the logout route again', async () => {
+    fetchMock.mockImplementationOnce(
+      async () => new Response(JSON.stringify({error: {code: 'auth/internal-error', message: 'down'}}), {status: 500}),
+    );
+    const {result} = renderHook(() => useFirebaseUser(auth, {serverUser: {uid: 'u1'}}));
+    act(() => firebase.emit(user('u1')));
+    await act(() => result.current.signOut());
+    expect(firebase.signOut).toHaveBeenCalledWith(auth);
+    await waitFor(() => expect(calls().map((c) => c.url)).toEqual(['/api/auth/logout', '/api/auth/logout']));
+    await waitFor(() => expect(result.current.error).toBeNull());
+    expect(result.current.status).toBe('signed-out');
+  });
+
   it('without serverUser, syncs on every load', async () => {
     renderHook(() => useFirebaseUser(auth));
     act(() => firebase.emit(null));

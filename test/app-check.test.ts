@@ -1,5 +1,5 @@
 import {SignJWT} from 'jose';
-import {beforeAll, describe, expect, it} from 'vitest';
+import {beforeAll, describe, expect, it, vi} from 'vitest';
 
 import {APP_CHECK_JWKS_URL, appCheckVerifier} from '../src/app-check';
 import {fakeFetch, jsonResponse, makeKey, now, type TestKey} from './helpers';
@@ -58,6 +58,27 @@ describe('appCheckVerifier', () => {
     });
     await expect(verify('garbage')).rejects.toMatchObject({code: 'app-check/invalid-token'});
     await expect(verify(null)).rejects.toMatchObject({code: 'app-check/missing-token', status: 401});
+  });
+
+  it('downloads the keys again for an unknown kid, at most once a minute', async () => {
+    vi.useFakeTimers({toFake: ['Date']});
+    try {
+      let rotated = false;
+      const fetch = fakeFetch({
+        [APP_CHECK_JWKS_URL]: () => jsonResponse({keys: [rotated ? stranger.jwk : key.jwk]}),
+      });
+      const verify = appCheckVerifier({projectNumber: PROJECT_NUMBER, fetch});
+      await verify(await token());
+      rotated = true;
+      const rotatedToken = await token({}, stranger, {kid: stranger.kid});
+      await expect(verify(rotatedToken)).rejects.toMatchObject({code: 'app-check/invalid-token'});
+      expect(fetch.calls).toHaveLength(1);
+      vi.setSystemTime(Date.now() + 61_000);
+      expect((await verify(rotatedToken)).appId).toBe('1:123456789:web:abc');
+      expect(fetch.calls).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('reports a failed key download as auth/internal-error', async () => {
