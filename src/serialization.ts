@@ -1,4 +1,4 @@
-import {createSerializationAdapter} from '@tanstack/react-router';
+import {createSerializationAdapter, type SerializationAdapter} from '@tanstack/react-router';
 
 import {FirebaseAuthError, type FirebaseAuthErrorCode} from './errors';
 
@@ -7,9 +7,10 @@ import {FirebaseAuthError, type FirebaseAuthErrorCode} from './errors';
  * browser as a `FirebaseAuthError` with its `code` and `status`, instead of a plain `Error` with only the message.
  * Register it in `src/start.ts`: `createStart(() => ({ serializationAdapters: [firebaseAuthErrorAdapter] }))`.
  */
-export const firebaseAuthErrorAdapter = createSerializationAdapter({
-  key: 'amjadiqbal/firebase-auth-error',
-  test: (value): value is FirebaseAuthError => value instanceof FirebaseAuthError,
-  toSerializable: (error) => ({code: error.code as string, message: error.message}),
-  fromSerializable: ({code, message}) => new FirebaseAuthError(code as FirebaseAuthErrorCode, message),
-});
+export const firebaseAuthErrorAdapter: SerializationAdapter<FirebaseAuthError, {code: string; message: string}, never> =
+  createSerializationAdapter({
+    key: 'amjadiqbal/firebase-auth-error',
+    test: (value): value is FirebaseAuthError => value instanceof FirebaseAuthError,
+    toSerializable: (error) => ({code: error.code as string, message: error.message}),
+    fromSerializable: ({code, message}) => new FirebaseAuthError(code as FirebaseAuthErrorCode, message),
+  });

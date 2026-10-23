@@ -3,9 +3,14 @@
 All notable changes to `@amjadiqbal/firebase-auth-tanstack-start` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - 2026-10-23
+## [0.1.1] - 2026-10-23
 
-First release.
+First published release. Version 0.1.0 was tagged but never published to npm.
+
+### Fixed
+- `firebaseAuthErrorAdapter` has an explicit type, so the type declarations import TanStack Router's types instead of bundling a 120 kB copy of them.
+
+## [0.1.0] - 2026-10-23 (not published)
 
 ### Added
 - `createFirebaseAuth()` (`/server`): verifies Firebase session cookies and bearer ID tokens, returns a typed `FirebaseUser` with custom claims; `authenticate()`, `getUser()`, `middleware()` for a Start request middleware, `requireUser()`, `loginHandler()`, `logoutHandler()` and `verifyAppCheck()`.

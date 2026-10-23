@@ -1,6 +1,6 @@
 {
   "name": "@amjadiqbal/firebase-auth-tanstack-start",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Firebase Authentication for TanStack Start: httpOnly session cookies, a typed user on the server for SSR, server functions and routes, login/logout routes, a beforeLoad guard and a React hook. Verifies tokens with Web Crypto (no firebase-admin needed) or through firebase-admin. Community package, not affiliated with Google.",
   "keywords": [
     "firebase",
