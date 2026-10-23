@@ -7,8 +7,8 @@ export interface SessionCookieOptions {
   /** Lifetime in seconds, 300 (5 minutes) to 1,209,600 (14 days). Defaults to 432,000 (5 days). */
   maxAge?: number;
   /**
-   * Sets `Secure`. Defaults to `true`. Chrome and Firefox accept Secure cookies on `http://localhost`; Safari does
-   * not, so set it to `false` for plain-HTTP local development in Safari.
+   * Sets `Secure`. Defaults to `true`. Chromium accepts Secure cookies on `http://localhost`; if your browser drops
+   * the cookie during plain-HTTP local development, set it to `false` there (never in production).
    */
   secure?: boolean;
   /** Defaults to `lax`. `none` requires `secure: true`. */

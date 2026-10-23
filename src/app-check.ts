@@ -5,7 +5,7 @@ import {FirebaseAuthError} from './errors';
 export const APP_CHECK_JWKS_URL = 'https://firebaseappcheck.googleapis.com/v1/jwks';
 /** The header the Firebase JS SDK and the package's React hook send the App Check token in. */
 export const APP_CHECK_HEADER = 'x-firebase-appcheck';
-/** How long fetched App Check keys are kept: six hours, as Firebase's documentation recommends. */
+/** How long fetched App Check keys are kept: six hours, as firebase-admin does. */
 const JWKS_TTL_MS = 6 * 60 * 60 * 1000;
 
 export interface AppCheckOptions {
@@ -22,7 +22,7 @@ export interface VerifiedAppCheckToken {
 }
 
 /**
- * Builds a verifier for Firebase App Check tokens: RS256, signed by a key in App Check's JWKS, issuer
+ * Builds a verifier for Firebase App Check tokens, with the checks Firebase documents for JWT libraries: RS256 and typ JWT, signed by a key in App Check's JWKS, issuer
  * `https://firebaseappcheck.googleapis.com/<projectNumber>`, audience containing `projects/<projectNumber>`, not expired.
  */
 export function appCheckVerifier(options: AppCheckOptions) {

@@ -1,4 +1,4 @@
-import {appendResponseHeader, setResponseStatus} from '@tanstack/react-start/server';
+import {setCookie, setResponseStatus} from '@tanstack/react-start/server';
 
 import {APP_CHECK_HEADER, appCheckVerifier, type VerifiedAppCheckToken} from './app-check';
 import {
@@ -250,7 +250,19 @@ export function createFirebaseAuth<Claims extends CustomClaims = CustomClaims>(
 
     async middleware({request}) {
       const result = await authenticate(request);
-      if (result.clearCookie) inStartRequest(() => appendResponseHeader('set-cookie', clearSessionCookie(cookie)));
+      if (result.clearCookie) {
+        inStartRequest(() =>
+          setCookie(cookie.name, '', {
+            maxAge: 0,
+            expires: new Date(0),
+            path: cookie.path,
+            domain: cookie.domain,
+            httpOnly: true,
+            secure: cookie.secure,
+            sameSite: cookie.sameSite,
+          }),
+        );
+      }
       return {user: result.user};
     },
 

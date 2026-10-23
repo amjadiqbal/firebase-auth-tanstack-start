@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-const start = vi.hoisted(() => ({appendResponseHeader: vi.fn(), setResponseStatus: vi.fn()}));
+const start = vi.hoisted(() => ({setCookie: vi.fn(), setResponseStatus: vi.fn()}));
 vi.mock('@tanstack/react-start/server', () => start);
 
 import {FirebaseAuthError} from '../src/errors';
@@ -65,7 +65,7 @@ function login(body: unknown, headers: Record<string, string> = {}) {
 }
 
 beforeEach(() => {
-  start.appendResponseHeader.mockReset();
+  start.setCookie.mockReset();
   start.setResponseStatus.mockReset();
 });
 
@@ -135,12 +135,17 @@ describe('middleware', () => {
     expect(
       (await auth.middleware({request: request('/', {headers: {cookie: '__session=good-cookie'}})})).user?.uid,
     ).toBe('user-1');
-    expect(start.appendResponseHeader).not.toHaveBeenCalled();
+    expect(start.setCookie).not.toHaveBeenCalled();
     expect(await auth.middleware({request: request('/', {headers: {cookie: '__session=old'}})})).toEqual({user: null});
-    expect(start.appendResponseHeader).toHaveBeenCalledWith(
-      'set-cookie',
-      '__session=; Max-Age=0; Path=/; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Lax',
-    );
+    expect(start.setCookie).toHaveBeenCalledWith('__session', '', {
+      maxAge: 0,
+      expires: new Date(0),
+      path: '/',
+      domain: undefined,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
   });
 });
 

@@ -25,8 +25,12 @@ import {SessionSyncError, useFirebaseUser} from '../src/react';
 const auth = {} as Auth;
 const fetchMock = vi.fn<typeof fetch>();
 
-function user(uid: string): User {
-  return {uid, getIdToken: async () => `token-of-${uid}`} as unknown as User;
+function user(uid: string, claims: Record<string, unknown> = {}): User {
+  return {
+    uid,
+    getIdToken: async () => `token-of-${uid}`,
+    getIdTokenResult: async () => ({claims: {sub: uid, iss: 'x', aud: 'y', firebase: {}, ...claims}}),
+  } as unknown as User;
 }
 
 function calls() {
@@ -137,6 +141,24 @@ describe('useFirebaseUser', () => {
     expect(firebase.signOut).toHaveBeenCalledWith(auth);
     expect(onSessionChange).toHaveBeenCalledTimes(1);
     expect(result.current.status).toBe('signed-out');
+  });
+
+  it('makes a new session when the custom claims differ from the server user claims', async () => {
+    const onSessionChange = vi.fn();
+    const {result} = renderHook(() =>
+      useFirebaseUser(auth, {serverUser: {uid: 'u1', claims: {role: 'editor', plan: 'pro'}}, onSessionChange}),
+    );
+    // Same claims in another key order: nothing to do.
+    act(() => firebase.emit(user('u1', {plan: 'pro', role: 'editor'})));
+    await waitFor(() => expect(result.current.syncing).toBe(false));
+    expect(fetchMock).not.toHaveBeenCalled();
+    // setCustomUserClaims() + getIdToken(true) in the browser: the session is renewed once.
+    act(() => firebase.emit(user('u1', {plan: 'pro', role: 'admin'})));
+    await waitFor(() => expect(onSessionChange).toHaveBeenCalledTimes(1));
+    expect(calls().map((c) => c.url)).toEqual(['/api/auth/login']);
+    act(() => firebase.emit(user('u1', {plan: 'pro', role: 'admin'})));
+    await waitFor(() => expect(result.current.syncing).toBe(false));
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it('without serverUser, syncs on every load', async () => {

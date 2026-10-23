@@ -27,14 +27,20 @@ const STANDARD_CLAIMS = new Set([
   'nonce',
 ]);
 
+/** The custom claims of a token: every claim that is not a standard Firebase claim. */
+export function customClaimsOf(claims: Record<string, unknown>): CustomClaims {
+  const custom: CustomClaims = {};
+  for (const [key, value] of Object.entries(claims)) {
+    if (!STANDARD_CLAIMS.has(key)) custom[key] = value;
+  }
+  return custom;
+}
+
 /** Turns verified claims into the plain `FirebaseUser` object the package puts on the context. */
 export function toFirebaseUser<Claims extends CustomClaims = CustomClaims>(
   decoded: DecodedFirebaseToken,
 ): FirebaseUser<Claims> {
-  const claims: CustomClaims = {};
-  for (const [key, value] of Object.entries(decoded)) {
-    if (!STANDARD_CLAIMS.has(key)) claims[key] = value;
-  }
+  const claims = customClaimsOf(decoded);
   return {
     uid: decoded.uid ?? decoded.sub,
     email: decoded.email ?? null,
